@@ -8,7 +8,7 @@ if __name__ == "__main__":
     birth_date = "1990-03-15"
     gender = "female"
     phone = "+5491145678901"
-    document_number = "35987654"  # DNI del paciente
+    document_number = "35987654"  # DNI del paciente utilizado en las actividades 1 y 2
 
     # Crear recurso con DNI
     patient = create_patient_resource(
