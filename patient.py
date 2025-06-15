@@ -9,11 +9,11 @@ def create_patient_resource(family_name=None, given_name=None, birth_date=None, 
     # Agregar identificador (DNI)
     if document_number:
         identifier = Identifier()
-        identifier.system = "http://www.renaper.gov.ar/dni"  # Sistema de identificación argentino
+        identifier.system = "http://www.renaper.gov.ar/dni"  # Sistema de identificación argentino utilizado para la actividad 1 y 2
         identifier.value = str(document_number)
         patient.identifier = [identifier]
     
-    # Resto del código (nombre, fecha nacimiento, género, teléfono)...
+    
     if family_name or given_name:
         name = HumanName()
         if family_name:
