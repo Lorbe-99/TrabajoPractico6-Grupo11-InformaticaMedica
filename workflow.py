@@ -2,17 +2,28 @@ from patient import create_patient_resource
 from base import send_resource_to_hapi_fhir, get_resource_from_hapi_fhir
 
 if __name__ == "__main__":
-    # Parámetros del paciente (se puede dejar algunos vacíos)
-    family_name = "Doe"
-    given_name = "John"
-    birth_date = "1990-01-01"
-    gender = "male"
-    phone = None 
+    # Parámetros del paciente
+    family_name = "SANCHEZ"
+    given_name = "Camila"
+    birth_date = "1990-03-15"
+    gender = "female"
+    phone = "+5491145678901"
+    document_number = "35987654"  # DNI del paciente
 
-    # Crear y enviar el recurso de paciente
-    patient = create_patient_resource(family_name, given_name, birth_date, gender, phone)
+    # Crear recurso con DNI
+    patient = create_patient_resource(
+        family_name=family_name,
+        given_name=given_name,
+        birth_date=birth_date,
+        gender=gender,
+        phone=phone,
+        document_number=document_number  # Nuevo parámetro
+    )
+    
+    # Enviar a HAPI FHIR
     patient_id = send_resource_to_hapi_fhir(patient, 'Patient')
 
-    # Ver el recurso de paciente creado
+    # Leer el recurso creado (Actividad 3.a)
     if patient_id:
-        get_resource_from_hapi_fhir(patient_id,'Patient')
+        get_resource_from_hapi_fhir(patient_id, 'Patient')
+
