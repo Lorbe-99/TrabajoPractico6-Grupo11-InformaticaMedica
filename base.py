@@ -32,3 +32,20 @@ def get_resource_from_hapi_fhir(resource_id, resource_type):
         print(f"Error al obtener el recurso: {response.status_code}")
         print(response.json())
 
+# Funcion para buscar pacientes por DNI(identifier)
+def search_patient_by_document(document_number):
+    url = f"http://hapi.fhir.org/baseR4/Patient?identifier=http://www.renaper.gov.ar/dni|{document_number}"
+    response = requests.get(url, headers={"Accept": "application/fhir+json"})
+
+    if response.status_code == 200:
+        patients = response.json()
+        if patients.get('total', 0) > 0:
+            print("Paciente encontrado:")
+            print(patients['entry'][0]['resource']) 
+            return patients['entry'][0]['resource']['id']
+        else:
+            print("No se encontraron pacientes con ese DNI.")
+    else:
+        print(f"Error en la búsqueda: {response.status_code}")
+    
+    return None
