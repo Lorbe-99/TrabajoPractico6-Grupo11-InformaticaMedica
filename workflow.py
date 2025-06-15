@@ -1,5 +1,5 @@
 from patient import create_patient_resource
-from base import send_resource_to_hapi_fhir, get_resource_from_hapi_fhir
+from base import send_resource_to_hapi_fhir, get_resource_from_hapi_fhir, search_patient_by_document
 
 if __name__ == "__main__":
     # Parámetros del paciente
