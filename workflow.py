@@ -27,3 +27,8 @@ if __name__ == "__main__":
     if patient_id:
         get_resource_from_hapi_fhir(patient_id, 'Patient')
 
+    # Buscar paciente por DNI (Actividad 3.b)
+    print("\nBuscando paciente por DNI...")
+    found_patient_id = search_patient_by_document(document_number)
+    if found_patient_id and found_patient_id == patient_id:
+        print("¡El paciente creado coincide con la búsqueda!")
