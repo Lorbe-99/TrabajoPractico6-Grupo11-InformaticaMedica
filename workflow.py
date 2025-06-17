@@ -3,67 +3,79 @@ from base import send_resource_to_hapi_fhir, get_resource_from_hapi_fhir, search
 from observation import create_observation
 from diagnostic_report import create_diagnostic_report
 
-if __name__ == "__main__":
-    # Parámetros del paciente
-    family_name = "SANCHEZ"
-    given_name = "Camila"
-    birth_date = "1990-03-15"
-    gender = "female"
-    phone = "+5491145678901"
-    document_number = "35987654"  # DNI del paciente
+def main():
+    # --- Configuración de datos ---
+    patient_data = {
+        "family_name": "SANCHEZ",
+        "given_name": "Camila",
+        "birth_date": "1990-03-15",
+        "gender": "female",
+        "phone": "+5491145678901",
+        "document_number": "35987654"
+    }
 
-    # Crear recurso con DNI
-    patient = create_patient_resource(
-        family_name=family_name,
-        given_name=given_name,
-        birth_date=birth_date,
-        gender=gender,
-        phone=phone,
-        document_number=document_number  # Nuevo parámetro
-    )
-    
-    # Enviar a HAPI FHIR
+    # --- Actividad 3.a: Crear y leer Patient ---
+    print("\n--- Actividad 3.a: Creación de Paciente ---")
+    patient = create_patient_resource(**patient_data)
     patient_id = send_resource_to_hapi_fhir(patient, 'Patient')
-
-    # Leer el recurso creado (Actividad 3.a)
+    
     if patient_id:
+        print(f"\nPaciente creado con ID: {patient_id}")
         get_resource_from_hapi_fhir(patient_id, 'Patient')
 
-    # Buscar paciente por DNI (Actividad 3.b)
-    print("\nBuscando paciente por DNI...")
-    found_patient_id = search_patient_by_document(document_number)
+    # --- Actividad 3.b: Buscar Patient por DNI ---
+    print("\n--- Actividad 3.b: Búsqueda por DNI ---")
+    found_patient_id = search_patient_by_document(patient_data["document_number"])
     if found_patient_id and found_patient_id == patient_id:
-        print("¡El paciente creado coincide con la búsqueda!")
+        print("El paciente encontrado coincide con el creado.")
 
 
-# Actividad 3.c
+    # --- Actividad 3.c: Informe Diagnóstico ---
+    print("\n--- Actividad 3.c: Creación de Informe Diagnóstico ---")
+    
+    # Datos de las observaciones médicas
+    observaciones = [
+        {
+            "codigo": "72166-2", 
+            "valor": "Positivo", 
+            "descripcion": "Consumo de tabaco"
+        },
+        {
+            "codigo": "94531-1", 
+            "valor": "Negativo", 
+            "descripcion": "Prueba COVID-19"
+        }
+    ]
+    
+    # Crear y enviar observaciones
+    ids_observaciones = []
+    for obs in observaciones:
+        observacion = crear_observacion(
+            id_paciente=id_paciente,
+            codigo=obs["codigo"],
+            valor=obs["valor"],
+            descripcion=obs["descripcion"]
+        )
+        id_obs = enviar_recurso_hapi_fhir(observacion, "Observation")
+        if id_obs:
+            ids_observaciones.append(id_obs)
+            print(f"🔹 {obs['descripcion']}: {obs['valor']} (ID: {id_obs})")
+
+    # Crear informe diagnóstico
+    if ids_observaciones:
+        informe = crear_informe_diagnostico(
+            id_paciente=id_paciente,
+            ids_observaciones=ids_observaciones,
+            tipo_informe="LAB",  # Laboratorio
+            conclusion="Paciente con consumo de tabaco activo pero sin COVID-19."
+        )
+        id_informe = enviar_recurso_hapi_fhir(informe, "DiagnosticReport")
+        
+        # Resultados finales
+        print(f"\n Informe diagnóstico creado correctamente:")
+        print(f"   - ID del informe: {id_informe}")
+        print(f"   - Paciente: {datos_paciente['nombre']} {datos_paciente['apellido']}")
+        print(f"   - Enlace: http://hapi.fhir.org/baseR4/DiagnosticReport/{id_informe}")
+
 if __name__ == "__main__":
-    # --- Crear Patient ---
-    patient = create_patient_resource(
-        family_name="SANCHEZ",
-        given_name="Camila",
-        birth_date="1990-03-15",
-        gender="female",
-        document_number="35987654"
-    )
-    patient_id = send_resource_to_hapi_fhir(patient, "Patient")
-    
-    # --- Crear Observations ---
-    observation1 = create_observation(patient_id, code="72166-2", value="Positive")
-    observation2 = create_observation(patient_id, code="94531-1", value="Negative")
-    
-    obs1_id = send_resource_to_hapi_fhir(observation1, "Observation")
-    obs2_id = send_resource_to_hapi_fhir(observation2, "Observation")
-    
-    # --- Crear DiagnosticReport ---
-    report = create_diagnostic_report(
-        patient_id=patient_id,
-        observations_ids=[obs1_id, obs2_id],
-        report_type="LAB"
-    )
-    report_id = send_resource_to_hapi_fhir(report, "DiagnosticReport")
-    
-    # --- Ver resultados ---
-    print(f"\nPatient ID: {patient_id}")
-    print(f"Observation IDs: {obs1_id}, {obs2_id}")
-    print(f"DiagnosticReport ID: {report_id}")
+    main()
