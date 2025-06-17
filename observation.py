@@ -3,23 +3,30 @@ from fhir.resources.reference import Reference
 from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 
-def create_observation(patient_id, code="72166-2", value="Positive"):
+def crear_observacion(id_paciente, codigo, valor, descripcion):
     """
-    Crea una Observation para vincular al DiagnosticReport.
+    Crea una Observación médica en español para vincular a un Informe Diagnóstico.
     
     Args:
-        patient_id (str): ID del Patient.
-        code (str): Código LOINC del análisis (ej: "72166-2" para "Tobacco smoking status").
-        value (str): Resultado (ej: "Positive").
+        id_paciente (str): ID del Patient (ej: "pat-123").
+        codigo (str): Código LOINC del análisis (ej: "72166-2").
+        valor (str): Resultado (ej: "Positivo").
+        descripcion (str): Descripción en español (ej: "Consumo de tabaco").
     """
-    observation = Observation(
+    # Configurar el código LOINC con descripción en español
+    codigo_loinc = CodeableConcept()
+    codigo_loinc.coding = [Coding(
+        system="http://loinc.org",
+        code=codigo,
+        display=descripcion  # Descripción localizada
+    )]
+    
+    # Crear la Observación
+    observacion = Observation(
         status="final",
-        code=CodeableConcept(coding=[Coding(
-            system="http://loinc.org",
-            code=code,
-            display="Tobacco smoking status"
-        )]),
-        subject=Reference(reference=f"Patient/{patient_id}"),
-        valueCodeableConcept=CodeableConcept(text=value)
+        code=codigo_loinc,
+        subject=Reference(reference=f"Patient/{id_paciente}"),
+        valueCodeableConcept=CodeableConcept(text=valor)  # Valor en español
     )
-    return observation
+    
+    return observacion
