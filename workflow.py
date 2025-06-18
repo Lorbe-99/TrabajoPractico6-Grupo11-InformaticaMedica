@@ -1,10 +1,9 @@
 from patient import create_patient_resource
 from base import send_resource_to_hapi_fhir, get_resource_from_hapi_fhir, search_patient_by_document
-from observation import create_observation
+from observation import crear_observacion
 from diagnostic_report import create_diagnostic_report
 
 def main():
-    # --- Configuración de datos ---
     patient_data = {
         "family_name": "SANCHEZ",
         "given_name": "Camila",
@@ -14,7 +13,6 @@ def main():
         "document_number": "35987654"
     }
 
-    # --- Actividad 3.a: Crear y leer Patient ---
     print("\n--- Actividad 3.a: Creación de Paciente ---")
     patient = create_patient_resource(**patient_data)
     patient_id = send_resource_to_hapi_fhir(patient, 'Patient')
@@ -23,59 +21,45 @@ def main():
         print(f"\nPaciente creado con ID: {patient_id}")
         get_resource_from_hapi_fhir(patient_id, 'Patient')
 
-    # --- Actividad 3.b: Buscar Patient por DNI ---
     print("\n--- Actividad 3.b: Búsqueda por DNI ---")
     found_patient_id = search_patient_by_document(patient_data["document_number"])
     if found_patient_id and found_patient_id == patient_id:
         print("El paciente encontrado coincide con el creado.")
 
-
-    # --- Actividad 3.c: Informe Diagnóstico ---
     print("\n--- Actividad 3.c: Creación de Informe Diagnóstico ---")
     
-    # Datos de las observaciones médicas
     observaciones = [
-        {
-            "codigo": "72166-2", 
-            "valor": "Positivo", 
-            "descripcion": "Consumo de tabaco"
-        },
-        {
-            "codigo": "94531-1", 
-            "valor": "Negativo", 
-            "descripcion": "Prueba COVID-19"
-        }
+        {"codigo": "72166-2", "valor": "Positivo", "descripcion": "Consumo de tabaco"},
+        {"codigo": "94531-1", "valor": "Negativo", "descripcion": "Prueba COVID-19"}
     ]
     
-    # Crear y enviar observaciones
     ids_observaciones = []
     for obs in observaciones:
         observacion = crear_observacion(
-            id_paciente=id_paciente,
+            id_paciente=patient_id,
             codigo=obs["codigo"],
             valor=obs["valor"],
             descripcion=obs["descripcion"]
         )
-        id_obs = enviar_recurso_hapi_fhir(observacion, "Observation")
+        id_obs = send_resource_to_hapi_fhir(observacion, "Observation")
         if id_obs:
             ids_observaciones.append(id_obs)
             print(f"🔹 {obs['descripcion']}: {obs['valor']} (ID: {id_obs})")
 
-    # Crear informe diagnóstico
     if ids_observaciones:
-        informe = crear_informe_diagnostico(
-            id_paciente=id_paciente,
-            ids_observaciones=ids_observaciones,
-            tipo_informe="LAB",  # Laboratorio
+        informe = create_diagnostic_report(
+            patient_id=patient_id,
+            observations_ids=ids_observaciones,
+            report_type="LAB",
             conclusion="Paciente con consumo de tabaco activo pero sin COVID-19."
         )
-        id_informe = enviar_recurso_hapi_fhir(informe, "DiagnosticReport")
+        id_informe = send_resource_to_hapi_fhir(informe, "DiagnosticReport")
         
-        # Resultados finales
         print(f"\n Informe diagnóstico creado correctamente:")
         print(f"   - ID del informe: {id_informe}")
-        print(f"   - Paciente: {datos_paciente['nombre']} {datos_paciente['apellido']}")
+        print(f"   - Paciente: {patient_data['given_name']} {patient_data['family_name']}")
         print(f"   - Enlace: http://hapi.fhir.org/baseR4/DiagnosticReport/{id_informe}")
 
 if __name__ == "__main__":
     main()
+
