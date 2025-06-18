@@ -5,9 +5,10 @@ from fhir.resources.coding import Coding
 
 def crear_observacion(id_paciente, codigo, valor, descripcion):
     """
-    Crea una Observación médica en español para vincular a un Informe Diagnóstico.
+    Crea una Observación médica para vincular a un Informe Diagnóstico.
+
+    Estas son las variables que se utilizan:
     
-    Args:
         id_paciente (str): ID del Patient (ej: "pat-123").
         codigo (str): Código LOINC del análisis (ej: "72166-2").
         valor (str): Resultado (ej: "Positivo").
