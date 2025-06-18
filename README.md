@@ -15,3 +15,4 @@ Contiene la función `crear_observacion()` que:
 - Incluye fecha de observación (`effectiveDateTime`).
 
 ## diagnostic_report
+Esta función genera un recurso DiagnosticReport en formato FHIR (Fast Healthcare Interoperability Resources), relacionando un paciente y una o más observaciones.
