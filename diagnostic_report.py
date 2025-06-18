@@ -7,8 +7,8 @@ from datetime import datetime
 def create_diagnostic_report(patient_id, observations_ids, status="final", report_type="LAB", conclusion=None):
     """
     Crea un informe diagnóstico con relaciones a Patient y Observations.
-    
-    Args:
+
+    A continuacion se enumera como se explican las variables:
         patient_id (str): ID del Patient.
         observations_ids (list): IDs de Observations (ej: ["obs-1", "obs-2"]).
         status (str): "final"|"partial"|"corrected".
