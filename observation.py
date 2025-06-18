@@ -13,7 +13,7 @@ def crear_observacion(id_paciente, codigo, valor, descripcion):
         valor (str): Resultado (ej: "Positivo").
         descripcion (str): Descripción en español (ej: "Consumo de tabaco").
     """
-    # Configurar el código LOINC con descripción en español
+    # Configurar el código LOINC 
     codigo_loinc = CodeableConcept()
     codigo_loinc.coding = [Coding(
         system="http://loinc.org",
@@ -26,7 +26,7 @@ def crear_observacion(id_paciente, codigo, valor, descripcion):
         status="final",
         code=codigo_loinc,
         subject=Reference(reference=f"Patient/{id_paciente}"),
-        valueCodeableConcept=CodeableConcept(text=valor)  # Valor en español
+        valueCodeableConcept=CodeableConcept(text=valor)  
     )
     
     return observacion
